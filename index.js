@@ -29,8 +29,8 @@ async function main() {
 
     const messages = commits.map(({ commit }) => commit.message)
 
-    core.setOutput('commits', JSON.stringify(commits))
-    core.setOutput('messages', JSON.stringify(messages))
+    core.saveState('commits', commits)
+    core.saveState('messages', messages)
   } catch (error) {
     core.setFailed(error.message)
   }
