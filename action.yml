@@ -12,9 +12,15 @@ inputs:
     description: 'Regex flags of input filter_out_pattern'
     required: false
     default: ''
+  pr_number:
+    description: 'PR number, empty for current PR'
+    required: false
+    default: ''
 outputs:
   commits:
     description: 'commits in pr'
+  messages:
+    description: 'commit messages in pr'
 runs:
   using: 'node16'
   main: 'index.js'

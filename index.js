@@ -5,7 +5,7 @@ const validEvent = ['pull_request', 'merge_group']
 
 async function main() {
   try {
-    const { eventName, payload: {repository: repo, pull_request: pr} } = github.context
+    const { eventName, payload: { repository: repo } } = github.context
 
     if (validEvent.indexOf(eventName) < 0) {
       core.error(`Invalid event: ${eventName}`)
@@ -15,24 +15,29 @@ async function main() {
     const token = core.getInput('token')
     const filterOutPattern = core.getInput('filter_out_pattern')
     const filterOutFlags = core.getInput('filter_out_flags')
+    const prNumber = core.getInput('pr_number')
+
     const octokit = new github.GitHub(token)
 
     const commitsListed = await octokit.pulls.listCommits({
       owner: repo.owner.login,
       repo: repo.name,
-      pull_number: pr.number,
+      pull_number: prNumber,
     })
 
     let commits = commitsListed.data
 
     if (filterOutPattern) {
       const regex = new RegExp(filterOutPattern, filterOutFlags)
-      commits = commits.filter(({commit}) => {
+      commits = commits.filter(({ commit }) => {
         return !regex.test(commit.message)
       })
     }
 
+    const messages = commits.map(({ commit }) => commit.message)
+
     core.setOutput('commits', JSON.stringify(commits))
+    core.setOutput('messages', JSON.stringify(messages))
   } catch (error) {
     core.setFailed(error.message)
   }
