@@ -1,16 +1,9 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 
-const validEvent = ['pull_request', 'merge_group']
-
 async function main() {
   try {
-    const { eventName, payload: { repository: repo } } = github.context
-
-    if (validEvent.indexOf(eventName) < 0) {
-      core.error(`Invalid event: ${eventName}`)
-      return
-    }
+    const { payload: { repository: repo } } = github.context
 
     const token = core.getInput('token')
     const filterOutPattern = core.getInput('filter_out_pattern')
